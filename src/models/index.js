@@ -5,6 +5,7 @@ import getVeiculoModel from "./veiculo.js";
 import getCaronaModel from "./carona.js";
 import getReservaModel from "./reserva.js";
 import getAvaliacaoModel from "./avaliacao.js";
+import getSessaoModel from "./sessao.js";
 
 // Conexão com o PostgreSQL do Neon. O endereço vem do arquivo .env
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
@@ -21,6 +22,7 @@ const models = {
   Carona: getCaronaModel(sequelize, Sequelize),
   Reserva: getReservaModel(sequelize, Sequelize),
   Avaliacao: getAvaliacaoModel(sequelize, Sequelize),
+  Sessao: getSessaoModel(sequelize, Sequelize),
 };
 
 // Liga os relacionamentos: executa o "associate" de cada model
