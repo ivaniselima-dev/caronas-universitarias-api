@@ -10,6 +10,8 @@ Projeto da disciplina de Aplicações Orientadas a Serviços (UNICAP, 2026.2).
 | Nome | RA |
 |---|---|
 | Ivanise Lima | |
+| André Madruga | |
+
 
 ## Modelo de dados
 
