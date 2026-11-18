@@ -1,12 +1,15 @@
 // USUÁRIO: quem usa a API. Pode ser motorista (oferece caronas)
 // e passageiro (reserva caronas) ao mesmo tempo.
-import bcrypt from "bcryptjs";
+import argon2 from "argon2";
+
+// Reconhece um texto que já é um hash do Argon2 (para não criptografar duas vezes)
+const ehHashArgon2 = (valor) => typeof valor === "string" && valor.startsWith("$argon2");
 
 const getUsuarioModel = (sequelize, { DataTypes }) => {
   const Usuario = sequelize.define(
     "usuario",
     {
-      // UUID: identificador aleatório e difícil de adivinhar (padrão do professor)
+      // UUID: identificador aleatório e difícil de adivinhar
       id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -23,13 +26,24 @@ const getUsuarioModel = (sequelize, { DataTypes }) => {
         unique: true,
         validate: { isEmail: { msg: "email inválido" } },
       },
-      // Guarda a senha CRIPTOGRAFADA (o hash), nunca a senha em texto. Ver etapa 2.
+      // ATIVIDADE 9 — guarda o HASH da senha (Argon2), nunca a senha em texto
       senha: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          len: { args: [6, 100], msg: "senha deve ter no mínimo 6 caracteres" },
+          tamanho(valor) {
+            if (ehHashArgon2(valor)) return; // já criptografada
+            if (!valor || valor.length < 7 || valor.length > 42) {
+              throw new Error("senha deve ter entre 7 e 42 caracteres");
+            }
+          },
         },
+      },
+      // ATIVIDADE RBAC — papel do usuário. Todo cadastro novo nasce como USER.
+      role: {
+        type: DataTypes.ENUM("USER", "ADMIN"),
+        allowNull: false,
+        defaultValue: "USER",
       },
       curso: {
         type: DataTypes.STRING,
@@ -38,52 +52,40 @@ const getUsuarioModel = (sequelize, { DataTypes }) => {
         type: DataTypes.STRING,
       },
     },
-    {
-      tableName: "usuarios",
-      // Por padrão, a senha NUNCA sai nas consultas...
-      defaultScope: { attributes: { exclude: ["senha"] } },
-      // ...só quando pedimos explicitamente (usado no login)
-      scopes: { comSenha: { attributes: { include: ["senha"] } } },
-      // Hooks: funções que o Sequelize executa automaticamente em certos momentos
-      hooks: {
-        // Antes de salvar um usuário novo, troca a senha pelo hash.
-        // O hash é uma "impressão digital" da senha: não dá para voltar ao texto original.
-        beforeCreate: async (usuario) => {
-          usuario.senha = await bcrypt.hash(usuario.senha, 10);
-        },
-        // Se a senha for alterada depois, criptografa a nova também
-        beforeUpdate: async (usuario) => {
-          if (usuario.changed("senha")) {
-            usuario.senha = await bcrypt.hash(usuario.senha, 10);
-          }
-        },
-      },
-    },
+    { tableName: "usuarios" },
   );
 
-  // Confere se a senha digitada no login corresponde ao hash guardado
-  Usuario.prototype.senhaCorreta = async function (senhaDigitada) {
-    return await bcrypt.compare(senhaDigitada, this.senha);
+  Usuario.associate = (models) => {
+    Usuario.hasMany(models.Veiculo, { foreignKey: "usuarioId", as: "veiculos", onDelete: "CASCADE" });
+    Usuario.hasMany(models.Carona, { foreignKey: "motoristaId", as: "caronas", onDelete: "CASCADE" });
+    Usuario.hasMany(models.Reserva, { foreignKey: "passageiroId", as: "reservas", onDelete: "CASCADE" });
+    Usuario.hasMany(models.Avaliacao, { foreignKey: "autorId", as: "avaliacoes", onDelete: "CASCADE" });
+    Usuario.hasMany(models.RefreshToken, { foreignKey: "usuarioId", onDelete: "CASCADE" });
   };
 
-  // Ao transformar o usuário em JSON (resposta da API), remove a senha
+  // ATIVIDADE 9 — Hooks: o Sequelize roda isto sozinho antes de salvar.
+  // A senha digitada vira hash Argon2, uma "impressão digital" que não dá para reverter.
+  Usuario.beforeCreate(async (usuario) => {
+    if (!ehHashArgon2(usuario.senha)) {
+      usuario.senha = await argon2.hash(usuario.senha);
+    }
+  });
+  Usuario.beforeUpdate(async (usuario) => {
+    if (usuario.changed("senha") && !ehHashArgon2(usuario.senha)) {
+      usuario.senha = await argon2.hash(usuario.senha);
+    }
+  });
+
+  // Confere se a senha digitada no login corresponde ao hash guardado
+  Usuario.prototype.validarSenha = async function (senhaDigitada) {
+    return await argon2.verify(this.senha, senhaDigitada);
+  };
+
+  // A senha (mesmo o hash) NUNCA sai nas respostas da API
   Usuario.prototype.toJSON = function () {
     const dados = { ...this.get() };
     delete dados.senha;
     return dados;
-  };
-
-  Usuario.associate = (models) => {
-    // Um usuário tem vários veículos (é o dono deles)
-    Usuario.hasMany(models.Veiculo, { foreignKey: "usuarioId", as: "veiculos", onDelete: "CASCADE" });
-    // Um usuário oferece várias caronas (como motorista)
-    Usuario.hasMany(models.Carona, { foreignKey: "motoristaId", as: "caronas", onDelete: "CASCADE" });
-    // Um usuário faz várias reservas (como passageiro)
-    Usuario.hasMany(models.Reserva, { foreignKey: "passageiroId", as: "reservas", onDelete: "CASCADE" });
-    // Sessões abertas por login (usadas no logout)
-    Usuario.hasMany(models.Sessao, { foreignKey: "usuarioId", as: "sessoes", onDelete: "CASCADE" });
-    // Um usuário escreve várias avaliações
-    Usuario.hasMany(models.Avaliacao, { foreignKey: "autorId", as: "avaliacoes", onDelete: "CASCADE" });
   };
 
   return Usuario;

@@ -1,43 +1,57 @@
-import { AppError } from "../utils/index.js";
+// ATIVIDADE 4 — Middleware global de tratamento de erros
+// É o ÚLTIMO middleware do index.js e tem 4 parâmetros (err, req, res, next).
+// No Express 5, qualquer erro lançado numa função async vem parar aqui sozinho,
+// sem precisar de try/catch. Toda falha vira um JSON previsível:
+//   { "status": "fail" | "error", "message": "...", "stack": "..." (só em desenvolvimento) }
+import { ZodError } from "zod";
+import { env, AppError } from "../utils/index.js";
 
-// Middleware global de erro: é o ÚLTIMO a ser registrado no index.js.
-// Qualquer erro lançado em uma rota (inclusive em funções async, no Express 5)
-// é entregue aqui, e transformado em uma resposta JSON com o código certo.
 const errorMiddleware = (err, req, res, next) => {
-  // Erros que nós mesmos lançamos (404, 401, 403...)
+  // O stack trace (detalhes internos) só aparece em desenvolvimento, nunca em produção
+  const emDesenvolvimento = env.NODE_ENV === "development";
+  const responder = (statusCode, message, extra = {}) =>
+    res.status(statusCode).send({
+      status: `${statusCode}`.startsWith("4") ? "fail" : "error",
+      message,
+      ...extra,
+      ...(emDesenvolvimento && { stack: err.stack }),
+    });
+
+  // Dados inválidos barrados pelo Zod (atividade 8) -> 400
+  if (err instanceof ZodError) {
+    const errors = err.issues.map((e) => `${e.path.join(".")}: ${e.message}`);
+    return responder(400, errors.join("; "), { errors });
+  }
+
+  // Erros previstos lançados por nós (401, 403, 404, 409, 429...)
   if (err instanceof AppError) {
-    return res.status(err.statusCode).send({ status: err.status, message: err.message });
+    return responder(err.statusCode, err.message);
   }
 
-  // Valor repetido em campo único (ex.: email ou placa já cadastrados)
+  // Valor repetido em campo único (email ou placa já cadastrados) -> 409
   if (err.name === "SequelizeUniqueConstraintError") {
-    return res.status(409).send({
-      status: "fail",
-      message: err.errors.map((e) => `${e.path} já cadastrado`).join(", "),
-    });
+    const campos = err.errors.map((e) => e.path).join(", ");
+    return responder(409, `Registro duplicado: ${campos} já cadastrado.`);
   }
 
-  // Campo obrigatório faltando ou valor fora da regra (ex.: nota 7)
+  // Regra do model violada (ex.: nota fora de 1 a 5) -> 400
   if (err.name === "SequelizeValidationError") {
-    return res.status(400).send({
-      status: "fail",
-      message: err.errors.map((e) => e.message).join(", "),
-    });
+    return responder(400, err.errors.map((e) => e.message).join(", "));
   }
 
-  // id em formato inválido (ex.: /caronas/abc quando o id é UUID)
-  if (err.name === "SequelizeDatabaseError" && err.original?.code === "22P02") {
-    return res.status(400).send({ status: "fail", message: "Identificador (ID) em formato inválido" });
-  }
-
-  // Referência para um registro que não existe (ex.: veiculoId inexistente)
+  // Referência a um registro que não existe -> 400
   if (err.name === "SequelizeForeignKeyConstraintError") {
-    return res.status(400).send({ status: "fail", message: "Registro relacionado não existe" });
+    return responder(400, "Registro relacionado não existe.");
   }
 
-  // Qualquer outro erro: problema no servidor
+  // JSON mal escrito no corpo do pedido -> 400
+  if (err.type === "entity.parse.failed") {
+    return responder(400, "JSON inválido no corpo da requisição.");
+  }
+
+  // Qualquer outra coisa: falha inesperada -> 500, sem vazar detalhes
   console.error(err);
-  return res.status(500).send({ status: "error", message: "Algo deu errado no servidor" });
+  return responder(500, "Algo deu errado no servidor.");
 };
 
 export default errorMiddleware;

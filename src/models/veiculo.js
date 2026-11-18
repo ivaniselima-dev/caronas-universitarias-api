@@ -1,4 +1,4 @@
-// VEÍCULO: o carro que o motorista usa nas caronas. Pertence a um usuário.
+// VEÍCULO: o carro que o motorista usa nas caronas.
 const getVeiculoModel = (sequelize, { DataTypes }) => {
   const Veiculo = sequelize.define(
     "veiculo",
@@ -20,25 +20,20 @@ const getVeiculoModel = (sequelize, { DataTypes }) => {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
-        validate: { notEmpty: { msg: "placa é obrigatória" } },
       },
       // Quantos passageiros cabem (sem contar o motorista)
       lugares: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        validate: {
-          min: { args: [1], msg: "lugares deve ser no mínimo 1" },
-          max: { args: [8], msg: "lugares deve ser no máximo 8" },
-        },
+        validate: { min: 1, max: 8 },
       },
     },
     { tableName: "veiculos" },
   );
 
   Veiculo.associate = (models) => {
-    // usuarioId: o DONO do veículo. Só ele pode alterar ou apagar.
+    // usuarioId = DONO do veículo. Só ele (ou um ADMIN) pode alterar ou apagar.
     Veiculo.belongsTo(models.Usuario, { foreignKey: "usuarioId", as: "dono" });
-    // Um veículo pode ser usado em várias caronas
     Veiculo.hasMany(models.Carona, { foreignKey: "veiculoId", as: "caronas", onDelete: "CASCADE" });
   };
 
