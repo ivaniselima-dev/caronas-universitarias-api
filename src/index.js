@@ -1,8 +1,11 @@
 import "dotenv/config";
+import helmet from "helmet";
+import { env } from "./utils/index.js";
 import express from "express";
 import { sequelize } from "./models/index.js";
 import {
   corsMiddleware,
+  limiterMiddleware,
   logMiddleware,
   authMiddleware,
   notFoundMiddleware,
@@ -15,7 +18,9 @@ const app = express();
 app.set("trust proxy", true);
 
 // ---------- middlewares: rodam em TODO pedido, nesta ordem ----------
+app.use(helmet());
 app.use(corsMiddleware);
+app.use(limiterMiddleware);
 app.use(express.json()); // transforma o corpo JSON em req.body
 app.use(logMiddleware);
 
@@ -34,7 +39,7 @@ app.use(notFoundMiddleware); // nenhuma rota respondeu -> 404
 app.use(errorMiddleware); // qualquer erro lançado vem parar aqui
 
 // ---------- inicialização ----------
-const port = process.env.PORT || 3000;
+const port = env.PORT;
 
 // SYNC_DATABASE=true          -> cria as tabelas que faltam
 // ERASE_DATABASE_ON_SYNC=true -> apaga tudo e recria (use só quando quiser zerar o banco)
