@@ -33,7 +33,7 @@ app.use(protectRoutes); // fora das rotas públicas, exige login
 app.get("/", (req, res) => res.status(200).send({ message: "API de Caronas Universitárias no ar" }));
 app.use("/session", routes.session); // login, refresh, logout
 app.use("/usuarios", routes.usuario); // sign up e cadastro
-// app.use("/veiculos", routes.veiculo);
+app.use("/veiculos", routes.veiculo);
 // app.use("/caronas", routes.carona); // + /caronas/:caronaId/reservas e /avaliacoes
 
 // ---------- erros: sempre DEPOIS das rotas ----------
