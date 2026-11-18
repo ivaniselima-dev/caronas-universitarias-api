@@ -11,10 +11,7 @@ const getAvaliacaoModel = (sequelize, { DataTypes }) => {
       nota: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        validate: {
-          min: { args: [1], msg: "nota deve ser de 1 a 5" },
-          max: { args: [5], msg: "nota deve ser de 1 a 5" },
-        },
+        validate: { min: 1, max: 5 },
       },
       comentario: {
         type: DataTypes.TEXT,
@@ -25,7 +22,7 @@ const getAvaliacaoModel = (sequelize, { DataTypes }) => {
 
   Avaliacao.associate = (models) => {
     Avaliacao.belongsTo(models.Carona, { foreignKey: "caronaId", as: "carona" });
-    // autorId: quem escreveu. Só ele pode alterar ou apagar.
+    // autorId = DONO da avaliação
     Avaliacao.belongsTo(models.Usuario, { foreignKey: "autorId", as: "autor" });
   };
 

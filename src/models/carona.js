@@ -12,14 +12,11 @@ const getCaronaModel = (sequelize, { DataTypes }) => {
       origem: {
         type: DataTypes.STRING,
         allowNull: false,
-        validate: { notEmpty: { msg: "origem é obrigatória" } },
       },
       destino: {
         type: DataTypes.STRING,
         allowNull: false,
-        validate: { notEmpty: { msg: "destino é obrigatório" } },
       },
-      // Data e horário da saída
       dataHora: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -28,9 +25,9 @@ const getCaronaModel = (sequelize, { DataTypes }) => {
       vagas: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        validate: { min: { args: [1], msg: "vagas deve ser no mínimo 1" } },
+        validate: { min: 1 },
       },
-      // Valor da contribuição por passageiro (0 = gratuita)
+      // Contribuição por passageiro (0 = gratuita)
       valor: {
         type: DataTypes.DECIMAL(10, 2),
         defaultValue: 0,
@@ -43,12 +40,12 @@ const getCaronaModel = (sequelize, { DataTypes }) => {
   );
 
   Carona.associate = (models) => {
-    // motoristaId: quem oferece a carona. Só ele pode alterar ou apagar.
+    // motoristaId = DONO da carona. Só ele (ou um ADMIN) pode alterar ou apagar.
     Carona.belongsTo(models.Usuario, { foreignKey: "motoristaId", as: "motorista" });
     Carona.belongsTo(models.Veiculo, { foreignKey: "veiculoId", as: "veiculo" });
-    // RELACIONAMENTO 1: uma carona tem várias reservas  -> /caronas/:id/reservas
+    // RELACIONAMENTO 1: uma carona tem várias reservas  -> /caronas/:caronaId/reservas
     Carona.hasMany(models.Reserva, { foreignKey: "caronaId", as: "reservas", onDelete: "CASCADE" });
-    // RELACIONAMENTO 2: uma carona tem várias avaliações -> /caronas/:id/avaliacoes
+    // RELACIONAMENTO 2: uma carona tem várias avaliações -> /caronas/:caronaId/avaliacoes
     Carona.hasMany(models.Avaliacao, { foreignKey: "caronaId", as: "avaliacoes", onDelete: "CASCADE" });
   };
 
