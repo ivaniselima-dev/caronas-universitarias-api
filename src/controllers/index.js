@@ -4,3 +4,4 @@ export { default as usuarioController } from "./usuarioController.js";
 export { default as veiculoController } from "./veiculoController.js";
 export { default as caronaController } from "./caronaController.js";
 export { default as reservaController } from "./reservaController.js";
+export { default as avaliacaoController } from "./avaliacaoController.js";

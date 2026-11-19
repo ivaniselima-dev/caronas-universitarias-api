@@ -8,7 +8,7 @@ import {
   caronaIdParamSchema,
 } from "../middlewares/index.js";
 import reservaRouter from "./reserva.js";
-// import avaliacaoRouter from "./avaliacao.js";
+import avaliacaoRouter from "./avaliacao.js";
 
 const router = Router();
 
@@ -20,6 +20,6 @@ router.delete("/:caronaId", validate(caronaIdParamSchema), isCaronaOwner, carona
 
 // URLs compostas: os relacionamentos "moram" dentro da carona
 router.use("/:caronaId/reservas", reservaRouter);
-// router.use("/:caronaId/avaliacoes", avaliacaoRouter);
+router.use("/:caronaId/avaliacoes", avaliacaoRouter);
 
 export default router;
