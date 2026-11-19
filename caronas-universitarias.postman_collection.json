@@ -1,0 +1,1083 @@
+{
+  "info": {
+    "name": "Caronas Universitárias API",
+    "description": "1) Rode um Login: o token fica salvo na variável {{token}}. 2) Os pedidos de listar e criar salvam os ids nas variáveis (caronaId, veiculoId...). 3) Para trocar de usuário, rode outro Login. Altere baseUrl em Variables para o endereço da Vercel.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    },
+    {
+      "key": "usuarioId",
+      "value": ""
+    },
+    {
+      "key": "veiculoId",
+      "value": ""
+    },
+    {
+      "key": "caronaId",
+      "value": ""
+    },
+    {
+      "key": "reservaId",
+      "value": ""
+    },
+    {
+      "key": "avaliacaoId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Sessão (sign up, login, logout)",
+      "item": [
+        {
+          "name": "Sign up",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Ana Souza\",\n  \"email\": \"ana@unicap.br\",\n  \"senha\": \"senha12345\",\n  \"curso\": \"Sistemas para Internet\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Login (Ivanise)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/session",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "session"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ivanise@unicap.br\",\n  \"senha\": \"senha12345\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.data) {",
+                  "  pm.collectionVariables.set('token', r.data.token);",
+                  "  pm.collectionVariables.set('refreshToken', r.data.refreshToken);",
+                  "  pm.collectionVariables.set('usuarioId', r.data.usuario.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login (João)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/session",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "session"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"joao@unicap.br\",\n  \"senha\": \"senha12345\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.data) {",
+                  "  pm.collectionVariables.set('token', r.data.token);",
+                  "  pm.collectionVariables.set('refreshToken', r.data.refreshToken);",
+                  "  pm.collectionVariables.set('usuarioId', r.data.usuario.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login (Maria)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/session",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "session"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"maria@unicap.br\",\n  \"senha\": \"senha12345\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.data) {",
+                  "  pm.collectionVariables.set('token', r.data.token);",
+                  "  pm.collectionVariables.set('refreshToken', r.data.refreshToken);",
+                  "  pm.collectionVariables.set('usuarioId', r.data.usuario.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/session",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "session"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@caronas.com\",\n  \"senha\": \"admin12345\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.data) {",
+                  "  pm.collectionVariables.set('token', r.data.token);",
+                  "  pm.collectionVariables.set('refreshToken', r.data.refreshToken);",
+                  "  pm.collectionVariables.set('usuarioId', r.data.usuario.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Quem sou eu",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/session",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "session"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Renovar sessão (refresh)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/session/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "session",
+                "refresh"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.data) {",
+                  "  pm.collectionVariables.set('token', r.data.token);",
+                  "  pm.collectionVariables.set('refreshToken', r.data.refreshToken);",
+                  "  pm.collectionVariables.set('usuarioId', r.data.usuario.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/session",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "session"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Usuários",
+      "item": [
+        {
+          "name": "Listar todos (só ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Buscar por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{usuarioId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{usuarioId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Alterar o próprio cadastro",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{usuarioId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{usuarioId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telefone\": \"81988887777\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Tentar virar ADMIN (deve dar 403)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{usuarioId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{usuarioId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"ADMIN\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Apagar cadastro",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{usuarioId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{usuarioId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Veículos",
+      "item": [
+        {
+          "name": "Listar os meus",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/veiculos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "veiculos"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (Array.isArray(r) && r.length) pm.collectionVariables.set('veiculoId', r[0].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cadastrar",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/veiculos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "veiculos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"modelo\": \"Fiat Mobi\",\n  \"cor\": \"Vermelho\",\n  \"placa\": \"RTA2C34\",\n  \"lugares\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.id) pm.collectionVariables.set('veiculoId', r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/veiculos/{{veiculoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "veiculos",
+                "{{veiculoId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Alterar",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/veiculos/{{veiculoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "veiculos",
+                "{{veiculoId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cor\": \"Preto\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Apagar",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/veiculos/{{veiculoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "veiculos",
+                "{{veiculoId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Caronas",
+      "item": [
+        {
+          "name": "Listar todas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/caronas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "caronas"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (Array.isArray(r) && r.length) pm.collectionVariables.set('caronaId', r[0].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Oferecer carona",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/caronas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "caronas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"origem\": \"Casa Forte\",\n  \"destino\": \"UNICAP\",\n  \"dataHora\": \"2026-12-05T07:30:00-03:00\",\n  \"vagas\": 2,\n  \"valor\": 4,\n  \"observacao\": \"Saio da praça\",\n  \"veiculoId\": \"{{veiculoId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.id) pm.collectionVariables.set('caronaId', r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar por id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/caronas/{{caronaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "caronas",
+                "{{caronaId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Alterar",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/caronas/{{caronaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "caronas",
+                "{{caronaId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vagas\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Apagar",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/caronas/{{caronaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "caronas",
+                "{{caronaId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Reservas (relacionamento 1)",
+      "item": [
+        {
+          "name": "Reservas da carona",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/caronas/{{caronaId}}/reservas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "caronas",
+                "{{caronaId}}",
+                "reservas"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (Array.isArray(r) && r.length) pm.collectionVariables.set('reservaId', r[0].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reservar lugar",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/caronas/{{caronaId}}/reservas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "caronas",
+                "{{caronaId}}",
+                "reservas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lugares\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.id) pm.collectionVariables.set('reservaId', r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar reserva",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/caronas/{{caronaId}}/reservas/{{reservaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "caronas",
+                "{{caronaId}}",
+                "reservas",
+                "{{reservaId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cancelar reserva",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/caronas/{{caronaId}}/reservas/{{reservaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "caronas",
+                "{{caronaId}}",
+                "reservas",
+                "{{reservaId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"cancelada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Apagar reserva",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/caronas/{{caronaId}}/reservas/{{reservaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "caronas",
+                "{{caronaId}}",
+                "reservas",
+                "{{reservaId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Avaliações (relacionamento 2)",
+      "item": [
+        {
+          "name": "Avaliações da carona",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/caronas/{{caronaId}}/avaliacoes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "caronas",
+                "{{caronaId}}",
+                "avaliacoes"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (Array.isArray(r) && r.length) pm.collectionVariables.set('avaliacaoId', r[0].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Avaliar carona",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/caronas/{{caronaId}}/avaliacoes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "caronas",
+                "{{caronaId}}",
+                "avaliacoes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nota\": 5,\n  \"comentario\": \"Motorista pontual\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const r = pm.response.json();",
+                  "if (r.id) pm.collectionVariables.set('avaliacaoId', r.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Buscar avaliação",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/caronas/{{caronaId}}/avaliacoes/{{avaliacaoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "caronas",
+                "{{caronaId}}",
+                "avaliacoes",
+                "{{avaliacaoId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Alterar avaliação",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/caronas/{{caronaId}}/avaliacoes/{{avaliacaoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "caronas",
+                "{{caronaId}}",
+                "avaliacoes",
+                "{{avaliacaoId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nota\": 4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Apagar avaliação",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/caronas/{{caronaId}}/avaliacoes/{{avaliacaoId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "caronas",
+                "{{caronaId}}",
+                "avaliacoes",
+                "{{avaliacaoId}}"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
