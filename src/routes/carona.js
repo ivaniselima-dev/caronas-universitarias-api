@@ -7,7 +7,7 @@ import {
   updateCaronaSchema,
   caronaIdParamSchema,
 } from "../middlewares/index.js";
-// import reservaRouter from "./reserva.js";
+import reservaRouter from "./reserva.js";
 // import avaliacaoRouter from "./avaliacao.js";
 
 const router = Router();
@@ -19,7 +19,7 @@ router.put("/:caronaId", validate(caronaIdParamSchema), isCaronaOwner, validate(
 router.delete("/:caronaId", validate(caronaIdParamSchema), isCaronaOwner, caronaController.apagar);
 
 // URLs compostas: os relacionamentos "moram" dentro da carona
-// router.use("/:caronaId/reservas", reservaRouter);
+router.use("/:caronaId/reservas", reservaRouter);
 // router.use("/:caronaId/avaliacoes", avaliacaoRouter);
 
 export default router;
