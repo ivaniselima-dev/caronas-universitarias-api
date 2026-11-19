@@ -2,3 +2,4 @@
 export { default as session } from "./session.js";
 export { default as usuario } from "./usuario.js";
 export { default as veiculo } from "./veiculo.js";
+export { default as carona } from "./carona.js";
