@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import models from "../models/index.js";
 import { AppError } from "../utils/index.js";
 
@@ -7,8 +8,17 @@ const detalhes = [
   { model: models.Veiculo, as: "veiculo", attributes: ["id", "modelo", "cor", "placa", "lugares"] },
 ];
 
-const listar = async () =>
-  models.Carona.findAll({ include: detalhes, order: [["dataHora", "ASC"]] });
+// Listagem de caronas com suporte a filtros opcionais por origem e destino
+const listar = async (filtros = {}) => {
+  const where = {};
+  if (filtros.origem) {
+    where.origem = { [Op.iLike]: `%${filtros.origem.trim()}%` };
+  }
+  if (filtros.destino) {
+    where.destino = { [Op.iLike]: `%${filtros.destino.trim()}%` };
+  }
+  return models.Carona.findAll({ where, include: detalhes, order: [["dataHora", "ASC"]] });
+};
 
 const buscarPorId = async (id) => models.Carona.findByPk(id, { include: detalhes });
 

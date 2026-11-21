@@ -31,6 +31,26 @@ app.use(protectRoutes); // fora das rotas públicas, exige login
 
 // ---------- rotas ----------
 app.get("/", (req, res) => res.status(200).send({ status: "success", message: "API de Caronas Universitárias no ar 🚗" }));
+
+// Rota de Healthcheck: monitora saúde da aplicação e integridade da conexão com o banco
+app.get("/health", async (req, res) => {
+  let dbStatus = "connected";
+  try {
+    await sequelize.authenticate();
+  } catch {
+    dbStatus = "disconnected";
+  }
+  return res.status(200).send({
+    status: "success",
+    data: {
+      uptime: `${Math.floor(process.uptime())}s`,
+      timestamp: new Date().toISOString(),
+      database: dbStatus,
+      environment: env.NODE_ENV,
+    },
+  });
+});
+
 app.use("/session", routes.session); // login, refresh, logout
 app.use("/usuarios", routes.usuario); // sign up e cadastro
 app.use("/veiculos", routes.veiculo);

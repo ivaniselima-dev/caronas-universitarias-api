@@ -34,6 +34,7 @@ Todas exigem login (`Authorization: Bearer <token>`), exceto as marcadas como p�
 
 | Método | Rota | O que faz |
 |---|---|---|
+| GET | `/health` | **Healthcheck** (público): status da API, uptime e conexão com o banco |
 | POST | `/usuarios` | **Sign up** (público) |
 | POST | `/session` | **Login** (público): devolve `token` (15 min) e `refreshToken` (7 dias) |
 | POST | `/session/refresh` | Renova a sessão com rotação do refresh token (público) |
@@ -43,7 +44,7 @@ Todas exigem login (`Authorization: Bearer <token>`), exceto as marcadas como p�
 | GET | `/usuarios` | Lista todos (só ADMIN) |
 | GET, POST | `/veiculos` | Listar (cada usuário vê os seus; ADMIN vê todos) e cadastrar |
 | GET, PUT, DELETE | `/veiculos/:veiculoId` | Só o dono ou ADMIN |
-| GET, POST | `/caronas` | Listar todas e oferecer uma carona |
+| GET, POST | `/caronas` | Listar todas (suporta filtros `?origem=` e `?destino=`) e oferecer uma carona |
 | GET, PUT, DELETE | `/caronas/:caronaId` | Alterar/apagar: só o motorista ou ADMIN |
 | GET, POST | `/caronas/:caronaId/reservas` | **Relacionamento 1** (URL composta) |
 | GET, PUT, DELETE | `/caronas/:caronaId/reservas/:reservaId` | Alterar/apagar: só o passageiro ou ADMIN |

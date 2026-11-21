@@ -1,9 +1,9 @@
 import { caronaService } from "../services/index.js";
 import { AppError } from "../utils/index.js";
 
-// GET /caronas -> 200 (todas, para quem procura carona)
+// GET /caronas -> 200 (todas, com suporte a filtros ?origem=...&destino=...)
 const listar = async (req, res) =>
-  res.status(200).send({ status: "success", data: await caronaService.listar() });
+  res.status(200).send({ status: "success", data: await caronaService.listar(req.query) });
 
 // GET /caronas/:caronaId -> 200 ou 404
 const buscar = async (req, res) => {

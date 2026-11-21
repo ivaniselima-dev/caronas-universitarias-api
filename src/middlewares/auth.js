@@ -13,6 +13,7 @@ import {
 // Rotas que funcionam SEM login (todo o resto exige)
 const ROTAS_PUBLICAS = [
   { method: "GET", path: "/" },
+  { method: "GET", path: "/health" },
   { method: "HEAD", path: "/" },
   { method: "POST", path: "/usuarios" }, // sign up
   { method: "POST", path: "/session" }, // login
