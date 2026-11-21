@@ -30,7 +30,7 @@ app.use(authMiddleware); // atividade 9: descobre quem está logado (req.context
 app.use(protectRoutes); // fora das rotas públicas, exige login
 
 // ---------- rotas ----------
-app.get("/", (req, res) => res.status(200).send({ message: "API de Caronas Universitárias no ar" }));
+app.get("/", (req, res) => res.status(200).send({ status: "success", message: "API de Caronas Universitárias no ar 🚗" }));
 app.use("/session", routes.session); // login, refresh, logout
 app.use("/usuarios", routes.usuario); // sign up e cadastro
 app.use("/veiculos", routes.veiculo);
@@ -44,8 +44,34 @@ app.use(errorMiddleware); // atividade 4: todo erro vira JSON padronizado
 const eraseDatabaseOnSync = process.env.ERASE_DATABASE_ON_SYNC === "true";
 const syncDatabase = process.env.SYNC_DATABASE === "true" || eraseDatabaseOnSync;
 
+// Melhoria (Fase 8): tratamento de erros de rede e encerramento gracioso
 const startServer = () => {
-  app.listen(env.PORT, () => console.log(`Servidor rodando na porta ${env.PORT}`));
+  const server = app.listen(env.PORT, () =>
+    console.log(`✅ Servidor rodando na porta ${env.PORT} [${env.NODE_ENV}]`),
+  );
+
+  // Trata erros de rede (ex.: porta já em uso) sem derrubar o processo com um stack cru
+  server.on("error", (err) => {
+    if (err.code === "EADDRINUSE") {
+      console.error(`❌ Porta ${env.PORT} já está em uso.`);
+    } else {
+      console.error("❌ Erro no servidor:", err.message);
+    }
+    process.exit(1);
+  });
+
+  // Encerramento gracioso: aguarda as conexões abertas antes de sair (ex.: Vercel / Docker)
+  const shutdown = (sinal) => {
+    console.log(`\n⏳ Recebido ${sinal}. Encerrando servidor...`);
+    server.close(() => {
+      console.log("✅ Servidor encerrado com sucesso.");
+      process.exit(0);
+    });
+    // Força encerramento após 10 s caso haja conexões presas
+    setTimeout(() => process.exit(1), 10_000).unref();
+  };
+  process.on("SIGTERM", () => shutdown("SIGTERM"));
+  process.on("SIGINT", () => shutdown("SIGINT"));
 };
 
 if (syncDatabase) {

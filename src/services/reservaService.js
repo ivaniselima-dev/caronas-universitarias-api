@@ -41,6 +41,15 @@ const criar = async (carona, dados, me) => {
   if (carona.motoristaId === me.id) {
     throw new AppError("O motorista não pode reservar a própria carona.", 400);
   }
+
+  // Melhoria: impede reserva duplicada (mesmo passageiro já tem reserva ativa nesta carona)
+  const reservaExistente = await models.Reserva.findOne({
+    where: { caronaId: carona.id, passageiroId: me.id, status: { [Op.ne]: "cancelada" } },
+  });
+  if (reservaExistente) {
+    throw new AppError("Você já possui uma reserva ativa nesta carona.", 409);
+  }
+
   const lugares = dados.lugares ?? 1;
   await conferirVagas(carona, lugares);
   const reserva = await models.Reserva.create({

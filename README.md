@@ -5,28 +5,26 @@ Projeto da disciplina de Aplicações Orientadas a Serviços (UNICAP, 2026.2).
 
 ## Equipe
 
-<!-- Cada integrante adiciona a própria linha (nome e RA) pelo GitHub e faz o commit -->
-
 | Nome | RA |
 |---|---|
-| Ivanise Lima | |
-| André Madruga | |
+| Ivanise Lima | _(preencher)_ |
+| André Madruga | _(preencher)_ |
 
 
 ## Modelo de dados
 
 | Entidade | Campos principais | Dono do registro |
 |---|---|---|
-| Usuário | nome, email, senha (criptografada com Argon2), curso, telefone, role (USER ou ADMIN) | o próprio usuário |
-| Veículo | modelo, cor, placa, lugares | `usuarioId` |
+| Usuário | nome, email, senha (Argon2), curso, telefone, role (USER \| ADMIN) | o próprio usuário |
+| Veículo | modelo, cor, placa (formato antigo ou Mercosul), lugares | `usuarioId` |
 | Carona | origem, destino, dataHora, vagas, valor, observacao | `motoristaId` |
-| Reserva | lugares, status (pendente, confirmada, cancelada) | `passageiroId` |
-| Avaliação | nota (1 a 5), comentario | `autorId` |
+| Reserva | lugares, status (pendente \| confirmada \| cancelada) | `passageiroId` |
+| Avaliação | nota (1–5), comentario | `autorId` |
 
 Relacionamentos acessados por URL composta:
 
-- `/caronas/:id/reservas`: reservas de uma carona
-- `/caronas/:id/avaliacoes`: avaliações de uma carona
+- `/caronas/:id/reservas` — Relacionamento 1
+- `/caronas/:id/avaliacoes` — Relacionamento 2
 
 
 ## Rotas
@@ -54,27 +52,70 @@ Todas exigem login (`Authorization: Bearer <token>`), exceto as marcadas como p�
 ## Segurança
 
 Helmet, CORS por lista de origens, limite de 100 pedidos / 15 min por IP (5 tentativas de login / 15 min),
-validação de variáveis de ambiente e de requisições com Zod, senhas com Argon2, JWT + refresh token com rotação,
-RBAC (USER/ADMIN) e verificação de dono em cada alteração.
+validação de variáveis de ambiente e de requisições com Zod, senhas com Argon2, JWT (15 min) + refresh token
+com rotação (7 dias), RBAC (USER/ADMIN) e verificação de dono em cada alteração.
 
-## Como rodar
+Regras de negócio adicionais:
+- Passageiro não pode ter duas reservas ativas na mesma carona.
+- Usuário não pode avaliar a mesma carona duas vezes.
+- Placa do veículo é validada nos formatos antigo (ABC-1234) e Mercosul (ABC1D23).
 
-1. `npm install`
-2. Copie o `.env.sample` para `.env` e preencha:
-   - `DATABASE_URL`: connection string do Neon (banco da equipe) ou, para testar local, `postgresql://postgres:dev@localhost:5432/caronas?sslmode=disable`
-   - `JWT_SECRET`: texto aleatório com 10 caracteres ou mais (`openssl rand -hex 32`)
-   - `ALLOWED_ORIGINS`: origens liberadas no CORS, separadas por vírgula
-   - `NODE_ENV` e `PORT` (a porta padrão é 3000)
-3. Primeira vez (cria as tabelas **e** os dados iniciais, **apagando o que houver**):
-   `ERASE_DATABASE_ON_SYNC=true npm run dev`
-   Em banco compartilhado, só uma pessoa roda isso, uma única vez.
-4. No dia a dia: `npm run dev`
 
-Banco local com Docker (opcional):
+## Como rodar localmente
 
-    docker run --name caronas-pg -e POSTGRES_PASSWORD=dev -e POSTGRES_DB=caronas -p 5432:5432 -d postgres:16
+```bash
+npm install
+cp .env.sample .env   # edite com suas configurações
+```
 
-Nas sessões seguintes, ligue o container com `docker start caronas-pg`.
+Variáveis do `.env`:
+
+| Variável | Exemplo |
+|---|---|
+| `DATABASE_URL` | `postgresql://user:pass@host/db?sslmode=require` |
+| `JWT_SECRET` | texto aleatório ≥ 10 chars (`openssl rand -hex 32`) |
+| `ALLOWED_ORIGINS` | `http://localhost:3000` |
+| `NODE_ENV` | `development` |
+| `PORT` | `3000` |
+
+**Primeira vez** (cria tabelas e dados iniciais — apaga o banco existente):
+
+```bash
+ERASE_DATABASE_ON_SYNC=true npm run dev
+```
+
+> Em banco compartilhado, **apenas uma pessoa** executa este comando, **uma única vez**.
+
+**Uso diário:**
+
+```bash
+npm run dev
+```
+
+**Banco local com Docker (opcional):**
+
+```bash
+docker run --name caronas-pg -e POSTGRES_PASSWORD=dev -e POSTGRES_DB=caronas -p 5432:5432 -d postgres:16
+# Nas sessões seguintes:
+docker start caronas-pg
+```
+
+Use `DATABASE_URL=postgresql://postgres:dev@localhost:5432/caronas?sslmode=disable` no `.env` local.
+
+
+## Deploy na Vercel
+
+1. Faça o push para a branch `main` no GitHub.
+2. Importe o repositório na [Vercel](https://vercel.com).
+3. Configure as variáveis de ambiente no painel da Vercel:
+   - `DATABASE_URL` (NeonDB — connection string com `sslmode=require`)
+   - `JWT_SECRET`
+   - `ALLOWED_ORIGINS` (URL do seu front-end ou `*` para testes)
+   - `NODE_ENV=production`
+4. O deploy é automático a cada push na `main`.
+
+> O `vercel.json` já aponta o entry point para `src/index.js` usando `@vercel/node`.
+
 
 ## Dados iniciais (para testes)
 
@@ -85,14 +126,16 @@ Nas sessões seguintes, ligue o container com `docker start caronas-pg`.
 | João Pedro | joao@unicap.br | senha12345 | USER (motorista e passageiro) |
 | Maria Clara | maria@unicap.br | senha12345 | USER (passageira) |
 
-Mais 2 veículos, 2 caronas, 3 reservas e 3 avaliações.
+Mais 2 veículos, 2 caronas, 3 reservas e 3 avaliações pré-cadastradas.
 
-## Testes
+> As senhas acima são **apenas para desenvolvimento**. Nunca as use em produção.
 
-Importe `caronas-universitarias.postman_collection.json` no Postman. Rode um dos pedidos de login: o token é salvo sozinho na variável `token` da coleção.
 
-Observações:
+## Testes com Postman
 
-- O token de acesso vale 15 minutos. Se der 401, rode o login de novo.
-- O login tem limite de 5 tentativas a cada 15 minutos (erro 429). Reiniciar o servidor zera o contador.
-- As senhas da seção anterior são só para desenvolvimento. Troque-as antes de qualquer uso real.
+Importe `caronas-universitarias.postman_collection.json` no Postman.
+
+- Execute um dos pedidos de **Login**: o `token` e o `refreshToken` são salvos automaticamente nas variáveis da coleção.
+- Ajuste a variável `baseUrl` para a URL de produção após o deploy na Vercel.
+- O token de acesso vale **15 minutos**. Se receber `401`, rode o login novamente.
+- O login tem limite de **5 tentativas a cada 15 minutos** (erro `429`). Reiniciar o servidor zera o contador.

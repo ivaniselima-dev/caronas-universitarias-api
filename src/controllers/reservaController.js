@@ -3,15 +3,16 @@
 import { reservaService } from "../services/index.js";
 
 const listar = async (req, res) =>
-  res.status(200).send(await reservaService.listarDaCarona(req.carona, req.context.me));
+  res.status(200).send({ status: "success", data: await reservaService.listarDaCarona(req.carona, req.context.me) });
 
-const buscar = async (req, res) => res.status(200).send(req.reserva);
+const buscar = async (req, res) =>
+  res.status(200).send({ status: "success", data: req.reserva });
 
 const criar = async (req, res) =>
-  res.status(201).send(await reservaService.criar(req.carona, req.body, req.context.me));
+  res.status(201).send({ status: "success", data: await reservaService.criar(req.carona, req.body, req.context.me) });
 
 const atualizar = async (req, res) =>
-  res.status(200).send(await reservaService.atualizar(req.reserva, req.carona, req.body));
+  res.status(200).send({ status: "success", data: await reservaService.atualizar(req.reserva, req.carona, req.body) });
 
 const apagar = async (req, res) => {
   await reservaService.apagar(req.reserva);

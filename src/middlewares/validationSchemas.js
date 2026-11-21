@@ -59,10 +59,20 @@ export const updateUsuarioSchema = z.object({
 });
 
 // ---------- veículos ----------
+// Melhoria: valida formato de placa (padrão antigo ABC-1234 ou Mercosul ABC1D23)
+const placaRegex = /^[A-Z]{3}[0-9]{4}$|^[A-Z]{3}[0-9][A-Z][0-9]{2}$/;
 const veiculo = {
   modelo: z.string("modelo é obrigatório").trim().min(1, "modelo é obrigatório"),
   cor: z.string().optional(),
-  placa: z.string("placa é obrigatória").trim().toUpperCase().min(7, "placa inválida").max(8, "placa inválida"),
+  placa: z
+    .string("placa é obrigatória")
+    .trim()
+    .toUpperCase()
+    .min(7, "placa inválida (mín. 7 caracteres)")
+    .max(8, "placa inválida (máx. 8 caracteres)")
+    .refine((v) => placaRegex.test(v.replace("-", "")), {
+      message: "placa inválida — use o formato ABC1234 (antigo) ou ABC1D23 (Mercosul)",
+    }),
   lugares: z.coerce.number("lugares é obrigatório").int().min(1, "lugares deve ser de 1 a 8").max(8, "lugares deve ser de 1 a 8"),
 };
 export const createVeiculoSchema = z.object({ body: z.object(veiculo) });
@@ -75,7 +85,7 @@ const carona = {
   dataHora: z.coerce.date("dataHora deve ser uma data válida"),
   vagas: z.coerce.number("vagas é obrigatório").int().min(1, "vagas deve ser no mínimo 1"),
   valor: z.coerce.number().min(0, "valor não pode ser negativo").optional(),
-  observacao: z.string().max(500).optional(),
+  observacao: z.string().max(500, "observacao deve ter no máximo 500 caracteres").optional(),
   veiculoId: uuid("veiculoId"),
 };
 export const createCaronaSchema = z.object({ body: z.object(carona) });

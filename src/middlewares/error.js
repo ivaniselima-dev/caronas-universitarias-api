@@ -7,13 +7,14 @@ import { ZodError } from "zod";
 import { env, AppError } from "../utils/index.js";
 
 const errorMiddleware = (err, req, res, next) => {
-  // O stack trace (detalhes internos) só aparece em desenvolvimento, nunca em produção
+  // O stack trace (detalhes internos) só aparece em desenvolvimento, NUNCA em produção
   const emDesenvolvimento = env.NODE_ENV === "development";
   const responder = (statusCode, message, extra = {}) =>
     res.status(statusCode).send({
       status: `${statusCode}`.startsWith("4") ? "fail" : "error",
       message,
       ...extra,
+      // Melhoria (Fase 8): stack só vaza se NODE_ENV === "development"
       ...(emDesenvolvimento && { stack: err.stack }),
     });
 
@@ -50,7 +51,8 @@ const errorMiddleware = (err, req, res, next) => {
   }
 
   // Qualquer outra coisa: falha inesperada -> 500, sem vazar detalhes
-  console.error(err);
+  // Em produção, o console.error envia o erro para os logs da plataforma (Vercel)
+  console.error("[500]", err);
   return responder(500, "Algo deu errado no servidor.");
 };
 

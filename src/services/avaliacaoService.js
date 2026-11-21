@@ -14,6 +14,15 @@ const criar = async (carona, dados, me) => {
   if (carona.motoristaId === me.id) {
     throw new AppError("O motorista não pode avaliar a própria carona.", 400);
   }
+
+  // Melhoria: impede avaliação duplicada (mesmo autor já avaliou esta carona)
+  const avaliacaoExistente = await models.Avaliacao.findOne({
+    where: { caronaId: carona.id, autorId: me.id },
+  });
+  if (avaliacaoExistente) {
+    throw new AppError("Você já avaliou esta carona. Edite sua avaliação existente.", 409);
+  }
+
   const avaliacao = await models.Avaliacao.create({
     nota: dados.nota,
     comentario: dados.comentario,
