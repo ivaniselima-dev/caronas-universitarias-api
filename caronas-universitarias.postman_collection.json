@@ -524,7 +524,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "const r = pm.response.json();",
-                  "if (Array.isArray(r) && r.length) pm.collectionVariables.set('veiculoId', r[0].id);"
+                  "if (Array.isArray(r.data || r) && (r.data || r).length) pm.collectionVariables.set('veiculoId', (r.data || r)[0].id);"
                 ]
               }
             }
@@ -566,7 +566,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "const r = pm.response.json();",
-                  "if (r.id) pm.collectionVariables.set('veiculoId', r.id);"
+                  "if ((r.data || r).id) pm.collectionVariables.set('veiculoId', (r.data || r).id);"
                 ]
               }
             }
@@ -664,7 +664,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "const r = pm.response.json();",
-                  "if (Array.isArray(r) && r.length) pm.collectionVariables.set('caronaId', r[0].id);"
+                  "if (Array.isArray(r.data || r) && (r.data || r).length) pm.collectionVariables.set('caronaId', (r.data || r)[0].id);"
                 ]
               }
             }
@@ -706,7 +706,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "const r = pm.response.json();",
-                  "if (r.id) pm.collectionVariables.set('caronaId', r.id);"
+                  "if ((r.data || r).id) pm.collectionVariables.set('caronaId', (r.data || r).id);"
                 ]
               }
             }
@@ -806,7 +806,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "const r = pm.response.json();",
-                  "if (Array.isArray(r) && r.length) pm.collectionVariables.set('reservaId', r[0].id);"
+                  "if (Array.isArray(r.data || r) && (r.data || r).length) pm.collectionVariables.set('reservaId', (r.data || r)[0].id);"
                 ]
               }
             }
@@ -850,7 +850,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "const r = pm.response.json();",
-                  "if (r.id) pm.collectionVariables.set('reservaId', r.id);"
+                  "if ((r.data || r).id) pm.collectionVariables.set('reservaId', (r.data || r).id);"
                 ]
               }
             }
@@ -956,7 +956,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "const r = pm.response.json();",
-                  "if (Array.isArray(r) && r.length) pm.collectionVariables.set('avaliacaoId', r[0].id);"
+                  "if (Array.isArray(r.data || r) && (r.data || r).length) pm.collectionVariables.set('avaliacaoId', (r.data || r)[0].id);"
                 ]
               }
             }
@@ -1000,7 +1000,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "const r = pm.response.json();",
-                  "if (r.id) pm.collectionVariables.set('avaliacaoId', r.id);"
+                  "if ((r.data || r).id) pm.collectionVariables.set('avaliacaoId', (r.data || r).id);"
                 ]
               }
             }
