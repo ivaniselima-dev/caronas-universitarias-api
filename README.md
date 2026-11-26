@@ -8,7 +8,7 @@ Projeto da disciplina de Aplicações Orientadas a Serviços (UNICAP, 2026.2).
 | Nome | RA |
 |---|---|
 | Ivanise Lima | _(preencher)_ |
-| André Madruga | _(00000860419)_ |
+| André Madruga | 00000860419 |
 | João Pedro Couto | 00000860436 |
 
 
