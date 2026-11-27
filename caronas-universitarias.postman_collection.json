@@ -17,7 +17,7 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "https://caronas-universitarias-api-aw52.vercel.app"
+      "value": "https://caronas-universitarias.vercel.app"
     },
     {
       "key": "token",
